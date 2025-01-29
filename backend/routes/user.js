@@ -96,7 +96,55 @@ router.post('/signin' , async(req,res)=>{
     }
 })
 
+router.get('/' , authMiddleware , async(req,res)=>{
+    const searchValue = req.body.username;
 
+    try {
+
+        if(!searchValue){
+            return res.status(402).json({
+                message : "No user found"
+            })
+        }
+
+        const users = await User.find({ 
+            $or : [
+            {
+                first_name : {
+                    "$regex" : searchValue
+                }
+            } ,
+             {
+                last_name : {
+                    "$regex" : searchValue
+                }
+            }
+        ]
+    })
+    if(users.length == 0){
+        return res.status(403).json({
+            message : 'No user found'
+        })
+    }
+
+    const users_array = users.map( (user) => {
+        let obj = {
+            first_name : user.first_name,
+            last_name : user.last_name,
+            userId : user._id
+        }
+        return obj;
+    } )
+    return res.status(200).json({
+        users : users_array
+    })
+        
+    } catch (error) {
+        res.status(500).json({
+            message : 'Something went wrong'
+        })
+    }
+})
 
 
 module.exports = router;
