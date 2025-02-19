@@ -20,6 +20,7 @@ function authMiddleware(req,res,next){
             return res.status(401).json({})
         }
     } catch (error) {
+        console.log('auth.js');
         res.status(500).json({
             message : 'Something went wrong'
         })

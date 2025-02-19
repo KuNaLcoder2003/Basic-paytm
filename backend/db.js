@@ -3,7 +3,7 @@ const dotenv = require('dotenv')
 
 dotenv.config();
 
-mongoose.connect(process.env.MONGO_URL).then(()=>{
+mongoose.connect(`${process.env.MONGO_URL}`).then(()=>{
     console.log('Connected to MongoDB')
 }).catch(err => {
     console.log(err);
@@ -42,12 +42,31 @@ const Account_Scehma = new mongoose.Schema({
     }
 },{timestamps : true})
 
+const transaction_schema = new mongoose.Schema({
+    from_account_id : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'paytm_users',
+        required : true
+    } , 
+    to_account_id : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'paytm_users',
+        required : true
+    },
+    amount : {
+        type : Number,
+        required : true,
+    }
+},{timestamps : true});
+
 
 const User = mongoose.model('paytm_users' , User_Schema);
 const Accounts = mongoose.model('paytm_accounts' , Account_Scehma);
+const Transactions = mongoose.model('paytm_transactions' , transaction_schema)
 
 module.exports = {
     User,
-    Accounts
+    Accounts,
+    Transactions
 }
 
