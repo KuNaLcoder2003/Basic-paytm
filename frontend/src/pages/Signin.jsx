@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { CreditCard, Mail, Lock, Eye, EyeOff, User } from 'lucide-react';
 import Input from '../components/Input';
-const Signin = () => {
+import toast from 'react-hot-toast';
+const Signin = ({setIsOnline}) => {
     const [credentials, setCredentials] = useState({
         username: "",
         password: ""
@@ -20,10 +21,22 @@ const Signin = () => {
                 })
             }).then(async (response) => {
                 const data = await response.json()
-                console.log(data);
+                // console.log(data);
                 if (data.token) {
-                    localStorage.setItem('token', data.token)
+                    localStorage.setItem('token', `Bearer ${data.token}`)
                     setIsOnline(true);
+                    setCredentials({
+                        username : "",
+                        password : ""
+                    })
+                    toast.success(data.message)
+                }
+                else {
+                    toast.success(data.message)
+                    setCredentials({
+                        username : "",
+                        password : "",
+                    })
                 }
             })
         } catch (error) {
@@ -33,7 +46,7 @@ const Signin = () => {
     return (
         <div className="h-screen w-screen bg-[#faf8ff] flex">
             {/* Left Section - Form */}
-            <form className="w-1/2 h-full flex flex-col justify-center items-center p-8" onSubmit={(e)=>handleSignIn(e)}>
+            <div className="w-1/2 h-full flex flex-col justify-center items-center p-8">
                 <div className="w-full max-w-md">
                     {/* Logo */}
                     <div className="flex items-center mb-12">
@@ -46,7 +59,7 @@ const Signin = () => {
                     <p className="text-gray-600 mb-8">Enter your details to access your account</p>
 
                     {/* Form */}
-                    <form className="space-y-4">
+                    <form className="space-y-4" onSubmit={(e)=>handleSignIn(e)} >
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
                             <div className="relative">
@@ -105,7 +118,7 @@ const Signin = () => {
                         </a>
                     </p>
                 </div>
-            </form>
+            </div>
 
             {/* Right Section */}
             <div className="w-1/2 h-full bg-gradient-to-br from-purple-600 to-purple-800 flex flex-col justify-center items-center p-12 text-white">
